@@ -11,19 +11,21 @@ def init_canvas():
         Appelle click_canvas() par un bind <Button-1>
     """
     global canvas, liste_coordX, liste_coordY, nb_blocs
-    nb_blocs=0
-    liste_coordX=[]
-    liste_coordY=[]
-    canvas = tk.Canvas(app, width=taille, height=taille, bg ='white')
-    canvas.grid(row=1, column=0, columnspan=9, rowspan=4)
+    nb_blocs = 0
+    liste_coordX = [0]
+    liste_coordY = [0]
+    canvas = tk.Canvas(app, width = taille, height = taille, bg = 'white')
+    canvas.grid(row = 1, column = 0, columnspan = 9, rowspan = 4)
     for i in range(nb_lignes):
-        rd=random.randint(0,taille)
-        canvas.create_line(0,rd,taille,rd,fill='black')
+        rd = random.randint(0, taille)
+        canvas.create_line(0, rd, taille, rd, fill = 'black')
         liste_coordY.append(rd)
+    liste_coordY.append(taille)
     for i in range(nb_lignes):
-        rd=random.randint(0,taille)
-        canvas.create_line(rd,0,rd,taille,fill='black')
+        rd=random.randint(0, taille)
+        canvas.create_line(rd, 0, rd, taille, fill = 'black')
         liste_coordX.append(rd)
+    liste_coordX.append(taille)
     liste_coordX.sort()
     liste_coordY.sort()
 
@@ -32,17 +34,19 @@ def init_canvas():
 
 def arrange_blocs():
     global on_the_grid
-    if on_the_grid: on_the_grid=False
-    else: on_the_grid=True
+    if on_the_grid:
+        on_the_grid = False
+    else:
+        on_the_grid = True
 
 def color_choice():
     global auto
-    auto=True
+    auto = True
 
 def click_bt(col, eve):
     global  auto, cl
-    auto=False
-    cl=col
+    auto = False
+    cl = col
 
 def click_canvas(eve):
     """
@@ -60,62 +64,77 @@ def click_canvas(eve):
     """
     global canvas, nb_blocs, cl
 #-----------------------THIS IS WHERE THE MAGIC HAPPENS------------------------#
-    if nb_blocs<nb_max_blocs:
-        if auto: cl=random.sample(couleurs,1)
+    if nb_blocs < nb_max_blocs:
+        if auto:
+            cl = random.sample(couleurs, 1)
         if on_the_grid:
-            diffX=[]
-            diffY=[]
-            for e in liste_coordX: diffX.append(abs(e-eve.x))
-            for e in liste_coordY: diffY.append(abs(e-eve.y))
-            indX=diffX.index(min(diffX))
-            indY=diffY.index(min(diffY))
-            try: canvas.create_rectangle(liste_coordX[indX],liste_coordY[indY],
-                                         liste_coordX[indX+1],
-                                         liste_coordY[indY+1],fill=cl)
-            except IndexError: pass
+            diffX = []
+            diffY = []
+            for e in liste_coordX:
+                diffX.append(abs(e - eve.x))
+            print(eve.x)
+            print(diffX)
+            for e in liste_coordY:
+                diffY.append(abs(e - eve.y))
+            print(eve.y)
+            print(diffY)
+            indX = diffX.index(min(diffX))
+            print(indX)
+            indY = diffY.index(min(diffY))
+            print(indY)
+            try:
+                canvas.create_rectangle(liste_coordX[indX],
+                                        liste_coordY[indY],
+                                        liste_coordX[indX+1],
+                                        liste_coordY[indY+1],
+                                        fill=cl)
+            except IndexError:
+                pass
         else:
-            rect_x=random.randint(1,taille/4)
-            rect_y=random.randint(1,taille/4)
-            canvas.create_rectangle(eve.x,eve.y,
-                                    eve.x+rect_x,eve.y+rect_y,fill=cl)
-        nb_blocs+=1
+            rect_x = random.randint(1, taille / 4)
+            rect_y = random.randint(1, taille / 4)
+            canvas.create_rectangle(eve.x, eve.y,
+                                    eve.x + rect_x,
+                                    eve.y + rect_y,
+                                    fill = cl)
+        nb_blocs += 1
 #----------------------------END OF THE MAGIC----------------------------------#
 
 def save_mondrian():
     global nbsave
-    nbsave+=1
-    name='mondrian'+str(nbsave)+'.ps'
-    canvas.postscript(file=name)
+    nbsave += 1
+    name = 'mondrian' + str(nbsave) + '.ps'
+    canvas.postscript(file = name)
 
 taille = 700
-nb_lignes = 20
+nb_lignes = 10
 nb_max_blocs = 50
 couleurs = ['black', 'red', 'yellow', 'blue']
-correc=['white']
-on_the_grid=False
-auto=True
-nbsave=0
+correc = ['white']
+on_the_grid = False
+auto = True
+nbsave = 0
 
 app = tk.Tk()
 app.title("Mondrian")
 
-new_game = tk.Button(app, text='New Mondrian', command=init_canvas, width=10)
-new_game.grid(row=0, column=0, sticky=tk.W)
+new_game = tk.Button(app, text = 'New Mondrian', command = init_canvas, width = 10)
+new_game.grid(row = 0, column = 0, sticky = tk.W)
 
-arrange = tk.Button(app, text='Arrange Blocks', command=arrange_blocs, width=10)
-arrange.grid(row=0, column=1, sticky=tk.W)
+arrange = tk.Button(app, text = 'Arrange Blocks', command = arrange_blocs, width = 10)
+arrange.grid(row = 0, column = 1, sticky = tk.W)
 
-choix = tk.Button(app, text='Couleur aleatoire', command=color_choice, width=12)
-choix.grid(row=0, column=2, sticky=tk.W)
+choix = tk.Button(app, text = 'Couleur aleatoire', command = color_choice, width = 12)
+choix.grid(row = 0, column = 2, sticky = tk.W)
 
-for i, color in enumerate(correc+couleurs):
+for i, color in enumerate(correc + couleurs):
 #    b = tk.Button(app, text='', width=3, bg=color, activebackground=color) #Windaube way
-    b = tk.Button(app, text='', width=1,bg=color, activebackground=color) #Nunux way
-    b.grid(row=0, column=i+3)
-    b.bind("<Button-1>",partial(click_bt,color))
+    b = tk.Button(app, text = '', width = 1,bg = color, activebackground = color) #Nunux way
+    b.grid(row = 0, column = i + 3)
+    b.bind("<Button-1>", partial(click_bt, color))
 
-save = tk.Button(app, text='Enregistrer', command=save_mondrian, width=10)
-save.grid(row=0, column=8, sticky=tk.W)
+save = tk.Button(app, text = 'Enregistrer', command = save_mondrian, width = 10)
+save.grid(row = 0, column = 8, sticky = tk.W)
 
 init_canvas()
 
